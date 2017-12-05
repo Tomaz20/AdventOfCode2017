@@ -1,0 +1,27 @@
+extends ../templates/layout
+block corpo
+    h1.page-header Advent of Code
+    .row#advento
+        h4 Input 
+        textarea(v-model="input")
+        select(v-model="func")
+            option(v-for="i in days" :value="i") Dia {{ i }}
+        select(v-model="version")
+            option(v-for="i in [1,2]" :value="i" :selected="(i==1)") Parte {{ i }}
+        h5 {{ output }}
+        p {{ test }}
+
+
+        button(@click="runFunction(func)") Run
+
+        
+
+    //-
+
+    
+
+append scripts    
+    script(src="https://cdn.jsdelivr.net/npm/vue-resource@1.3.4")
+    script(src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.14.1/lodash.min.js")
+    script(src="https://unpkg.com/vue-select@latest")
+    script(src="./advent.vue")
