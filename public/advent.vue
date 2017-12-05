@@ -27,30 +27,16 @@ var advent = new Vue({
         },
         day1: function (input, version) {
             var lg = input.length;
-            var dist = 0;
 
-            if (version == 2) {
-                dist = lg / 2;
-            } else {
-                dist = 1;
-            }
-
-            var b = dist;
+            var b = (version == 2) ? lg / 2 : 1;
 
             var res = 0;
 
             for (var a = 0; a < lg; a++) {
-
-                if (input[a] == input[b]) {
-                    res += parseInt(input[b]);
+                if (input[a] == input[b%lg]) {
+                    res += parseInt(input[a]);
                 }
-
                 b++;
-
-                if (b >= lg) {
-                    b = b - lg;
-                }
-
             }
 
             this.output = res;
