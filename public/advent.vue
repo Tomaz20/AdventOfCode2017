@@ -114,33 +114,39 @@ var advent = new Vue({
                 return (ret - matrix[x][y]);
             }
 
-            var matrix = new Array(50).fill(0).map(x => new Array(50).fill(0));
+            var matrix = new Array(11).fill(0).map(x => new Array(11).fill(0));
 
-            matrix[25][25] = 1;
+            matrix[5][5] = 1;
 
-            var x = 25;
-            var y = 25;
+            var x = 5;
+            var y = 5;
 
             var dir = 0;
             var steps = 1;
             var stepsToTurn = 1;
 
-            while (sumNeigh < input) {
+            while (matrix[x][y] < input) {
+                
+                if (stepsToTurn == 0) {
+                    dir = (dir + 1)%4 ;
+
+                    if(dir%2==0){
+                        steps++;
+                    }
+                    
+                    stepsToTurn = steps;
+                }
+
                 stepsToTurn--;
                 var walked = walk(dir, x, y);
                 x = walked[0];
                 y = walked[1];
 
-                if (stepsToTurn == 0) {
-                    steps++;
-                    stepsToTurn = steps;
-                }
-
-                dir = 4 % (dir + 1);
 
                 matrix[x][y] = sumNeigh(matrix, x, y);
             }
-            this.output = sumNeigh;
+            this.output = matrix[x][y];
+            console.log(matrix);
         },
         day4: function (input, version) {
             lines = input.split("\n");
