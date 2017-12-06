@@ -4,7 +4,7 @@ var advent = new Vue({
         output: "",
         test: "",
         input: "",
-        func: 1,
+        func: 6,
         version: 1,
         days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
     },
@@ -21,6 +21,8 @@ var advent = new Vue({
                     break;
                 case 5: this.day5(this.input, this.version);
                     break;
+                case 6: this.day6(this.input, this.version);
+                    break;
                 default: this.output = "Ainda não implementado..";
                     break;
             }
@@ -33,7 +35,7 @@ var advent = new Vue({
             var res = 0;
 
             for (var a = 0; a < lg; a++) {
-                if (input[a] == input[b%lg]) {
+                if (input[a] == input[b % lg]) {
                     res += parseInt(input[a]);
                 }
                 b++;
@@ -126,14 +128,14 @@ var advent = new Vue({
             var stepsToTurn = 1;
 
             while (matrix[x][y] < input) {
-                
-                if (stepsToTurn == 0) {
-                    dir = (dir + 1)%4 ;
 
-                    if(dir%2==0){
+                if (stepsToTurn == 0) {
+                    dir = (dir + 1) % 4;
+
+                    if (dir % 2 == 0) {
                         steps++;
                     }
-                    
+
                     stepsToTurn = steps;
                 }
 
@@ -153,8 +155,7 @@ var advent = new Vue({
             var res = 0;
 
             for (i = 0; i < lines.length; i++) {
-                line = lines[i]
-                    .split(/[ \t]+/);
+                line = lines[i].split(/[ \t]+/);
 
                 if (version == 2) {
                     line = line.map(a => ((Array.from(a)).sort((x, y) => x.localeCompare(y))).join(''));
@@ -169,8 +170,8 @@ var advent = new Vue({
             this.output = res;
         },
         day5: function (input, version) {
-            input = input.split("\n")
-                .map(a => parseInt(a));
+            input = input.split("\n").map(a => parseInt(a));
+
             var res = 0;
             var pos = 0;
 
@@ -183,6 +184,42 @@ var advent = new Vue({
                 res++;
             }
             this.output = res;
+        },
+        day6: function (input, version) {
+            var highest = function(list){
+                temp = list.sort((a,b)=> b-a);
+
+                return temp[0];
+            }
+            var repeated = function(list) {
+                noDups = Array.from(new Set(list));
+
+                return list.length != noDups.length;
+            }
+
+            input = input.split(/[ \t]+/).map(a=>parseInt(a));
+
+            var results= [input.slice(0).join()];
+
+            var res=0;
+
+            while(!repeated(results)) {
+                
+                var high = highest(input.slice(0));
+                var pos=input.indexOf(high);
+                
+                input[pos]=0;
+
+                for(var i=1;i<=high;i++){
+                    input[(pos+i)%(input.length)]++;
+                }
+
+                results.push(input.slice(0).join());
+                res++;
+
+                if(res>9999) break; //prevenir ciclo infinito
+            }
+            (version==1) ? this.output = res : this.output = (results.length-results.indexOf(input.slice(0).join()) -1);
         },
     }
 })
