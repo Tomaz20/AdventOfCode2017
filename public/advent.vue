@@ -191,19 +191,13 @@ var advent = new Vue({
 
                 return temp[0];
             }
-            var repeated = function(list) {
-                noDups = Array.from(new Set(list));
-
-                return list.length != noDups.length;
-            }
 
             input = input.split(/[ \t]+/).map(a=>parseInt(a));
-
-            var results= [input.slice(0).join()];
-
+            var results= [];
             var res=0;
 
-            while(!repeated(results)) {
+            while(results.indexOf(input)==(-1) && res<9999) {
+                results.push(input.slice(0).join());
                 
                 var high = highest(input.slice(0));
                 var pos=input.indexOf(high);
@@ -213,11 +207,7 @@ var advent = new Vue({
                 for(var i=1;i<=high;i++){
                     input[(pos+i)%(input.length)]++;
                 }
-
-                results.push(input.slice(0).join());
                 res++;
-
-                if(res>9999) break; //prevenir ciclo infinito
             }
             (version==1) ? this.output = res : this.output = (results.length-results.indexOf(input.slice(0).join()) -1);
         },
