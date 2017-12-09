@@ -4,7 +4,7 @@ var advent = new Vue({
         output: "",
         test: "",
         input: "",
-        func: 8,
+        func: 9,
         version: 1,
         days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
     },
@@ -26,6 +26,8 @@ var advent = new Vue({
                 case 7: this.day7(this.input, this.version);
                     break;
                 case 8: this.day8(this.input, this.version);
+                    break;
+                case 9: this.day9(this.input, this.version);
                     break;
                 default: this.output = "Ainda não implementado..";
                     break;
@@ -317,14 +319,14 @@ var advent = new Vue({
             console.log(root);
         },
         day8: function (input, version) {
-            conditionCheck= function(a,cond,n){
-                switch(cond){
-                    case '<' : return a<n;
-                    case '>' : return a>n;
-                    case '==': return a==n;
-                    case '!=': return a!=n;
-                    case '<=': return a<=n;
-                    case '>=': return a>=n;
+            conditionCheck = function (a, cond, n) {
+                switch (cond) {
+                    case '<': return a < n;
+                    case '>': return a > n;
+                    case '==': return a == n;
+                    case '!=': return a != n;
+                    case '<=': return a <= n;
+                    case '>=': return a >= n;
                     default: console.log(cond);
                         return 0;
                 }
@@ -333,40 +335,58 @@ var advent = new Vue({
             var vars = {};
             var trueHighest = -9999;
 
-            for(let line of lines){
-                var x=line[0];
-                var y=line[4];
+            for (let line of lines) {
+                var x = line[0];
+                var y = line[4];
 
-                if(!vars[x]){
-                    vars[x]=0;
+                if (!vars[x]) {
+                    vars[x] = 0;
                 }
-                if(!vars[y]){
-                    vars[y]=0;
+                if (!vars[y]) {
+                    vars[y] = 0;
                 }
 
-                if(conditionCheck(vars[y],line[5],parseInt(line[6]))){
-                    switch(line[1]){
-                        case 'inc' : vars[x]+=parseInt(line[2]);
+                if (conditionCheck(vars[y], line[5], parseInt(line[6]))) {
+                    switch (line[1]) {
+                        case 'inc': vars[x] += parseInt(line[2]);
                             break;
-                        case 'dec' : vars[x]-=parseInt(line[2]);
+                        case 'dec': vars[x] -= parseInt(line[2]);
                             break;
-                        default : console.log(line[1]);
+                        default: console.log(line[1]);
                             break;
                     }
-                    if(vars[x]>trueHighest){
-                        trueHighest=vars[x];
+                    if (vars[x] > trueHighest) {
+                        trueHighest = vars[x];
                     }
                 }
             }
             var highest = -9999;
 
-            for(const variable in vars){
-                if(vars[variable]>highest){
-                    highest=vars[variable];
+            for (const variable in vars) {
+                if (vars[variable] > highest) {
+                    highest = vars[variable];
                 }
             }
 
-            this.output= (version==1) ? highest : trueHighest;
+            this.output = (version == 1) ? highest : trueHighest;
+        },
+        day9: function (input, version) {
+            var stream=input.replace(/!./g,'');
+            var ret=0;
+
+            if(version==1){
+                stream = stream.replace(/<[^>]*>/g,'')
+                    .replace(/[^\{\}]*/g,'');
+                
+                var inc=1;
+                for(var i=0;i<stream.length;i++){
+                    (stream[i]=='{') ? ret+=inc++ : inc--;
+                }
+            }
+            else {
+                ret = stream.length - stream.replace(/<[^>]*>/g,'<>').length;
+            }
+            this.output=ret;
         },
     }
 })
