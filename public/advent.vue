@@ -4,7 +4,7 @@ var advent = new Vue({
         output: "",
         test: "",
         input: "",
-        func: 9,
+        func: 11,
         version: 1,
         days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
     },
@@ -28,6 +28,10 @@ var advent = new Vue({
                 case 8: this.day8(this.input, this.version);
                     break;
                 case 9: this.day9(this.input, this.version);
+                    break;
+                case 10: this.day10(this.input, this.version);
+                    break;;
+                case 11: this.day11(this.input, this.version);
                     break;
                 default: this.output = "Ainda não implementado..";
                     break;
@@ -371,22 +375,139 @@ var advent = new Vue({
             this.output = (version == 1) ? highest : trueHighest;
         },
         day9: function (input, version) {
-            var stream=input.replace(/!./g,'');
-            var ret=0;
+            var stream = input.replace(/!./g, '');
+            var ret = 0;
 
-            if(version==1){
-                stream = stream.replace(/<[^>]*>/g,'')
-                    .replace(/[^\{\}]*/g,'');
-                
-                var inc=1;
-                for(var i=0;i<stream.length;i++){
-                    (stream[i]=='{') ? ret+=inc++ : inc--;
+            if (version == 1) {
+                stream = stream.replace(/<[^>]*>/g, '')
+                    .replace(/[^\{\}]*/g, '');
+
+                var inc = 1;
+                for (var i = 0; i < stream.length; i++) {
+                    (stream[i] == '{') ? ret += inc++ : inc--;
                 }
             }
             else {
-                ret = stream.length - stream.replace(/<[^>]*>/g,'<>').length;
+                ret = stream.length - stream.replace(/<[^>]*>/g, '<>').length;
             }
-            this.output=ret;
+            this.output = ret;
+        },
+        day10: function (input, version) {
+            var lengths = [];
+            var rounds = 1;
+            if (version == 1) {
+                lengths = input.split(/[, ]+/).map(a => parseInt(a));
+            }
+            else {
+                lengths = input.split('').map(a => a.charCodeAt(0)).concat([17, 31, 73, 47, 23]);
+                rounds = 64;
+            }
+
+            var currentPos = 0;
+            var skipSize = 0;
+            const N = 255;
+
+            var list = [];
+
+            for (var i = 0; i <= N; i++) {
+                list.push(i);
+            }
+
+            for (var round = 0; round < rounds; round++) {
+                for (let length of lengths) {
+                    if (currentPos + length > N) {
+                        var headReverse = list.slice(currentPos, N + 1);
+                        var tailReverse = list.slice(0, currentPos + length - 1 - N);
+
+                        var reverse = headReverse
+                            .concat(tailReverse)
+                            .reverse();
+
+                        headReverse = reverse.slice(0, headReverse.length);
+                        tailReverse = reverse.slice(headReverse.length, length);
+
+                        list = tailReverse.concat(list.slice(tailReverse.length, currentPos)).concat(headReverse);
+                    }
+                    else {
+                        list = list.slice(0, currentPos).concat(
+                            list.slice(currentPos, currentPos + length)
+                                .reverse()
+                        ).concat(
+                            list.slice(currentPos + length, N + 1)
+                            );
+                    }
+
+                    currentPos = (currentPos + length + skipSize) % (N + 1);
+                    skipSize++;
+                }
+            }
+
+            if (version == 1) {
+                this.output = list[0] * list[1];
+            }
+            else {
+                ret = [];
+                for (var block = 0; block <= 15; block++) {
+                    var hex = list.slice(block * 16, (block + 1) * 16)
+                        .reduce((a, b) => a ^ b)
+                        .toString(16);
+
+                    (hex.length == 1) ? ret.push('0' + hex) : ret.push(hex);
+                }
+                this.output = ret.join('');
+            }
+        },
+        day11: function (input, version) {
+            var walk= function(step,dir,dist){
+                switch(dir){
+                    case(0):{
+                        switch(step){
+                            case('n'): return([0,++dist]);
+                            case('nw'): return([1,++dist]);
+                            case('sw'): return([0,++dist]);
+                            case('s'): return([0,++dist]);
+                            case('se'): return([0,++dist]);
+                            case('e'): return([0,++dist]);
+                            case('ne'): return([1,++dist]);
+                        }
+                    }
+                }
+            }
+
+            var steps = input.split(",");
+
+            var start = {
+                dist=0,
+                dir:-1,
+                n: {
+                    dist:1,
+                    dir: 0,
+                },
+                nw: {
+                    dist:1,
+                    dir: 1,
+                },
+                nw: {
+                    dist:1,
+                    dir: 1,
+                },
+                sw: {
+                    dist:1,
+                    dir: 3,
+                },
+                s: {
+                    dist:1,
+                    dir: 4,
+                },
+                se: {
+                    dist:1,
+                    dir: 5,
+                },
+                ne: {
+                    dist:1,
+                    dir: 7,
+                },
+            }
         },
     }
 })
