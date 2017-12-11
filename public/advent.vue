@@ -458,56 +458,28 @@ var advent = new Vue({
             }
         },
         day11: function (input, version) {
-            var walk= function(step,dir,dist){
-                switch(dir){
-                    case(0):{
-                        switch(step){
-                            case('n'): return([0,++dist]);
-                            case('nw'): return([1,++dist]);
-                            case('sw'): return([0,++dist]);
-                            case('s'): return([0,++dist]);
-                            case('se'): return([0,++dist]);
-                            case('e'): return([0,++dist]);
-                            case('ne'): return([1,++dist]);
-                        }
-                    }
+            var walk = function (dir, coords) {
+                switch (dir) {
+                    case ('n'): return ([coords[0], coords[1] + 1, coords[2] - 1]);
+                    case ('nw'): return ([coords[0] - 1, coords[1] + 1, coords[2]]);
+                    case ('sw'): return ([coords[0] - 1, coords[1], coords[2] + 1]);
+                    case ('s'): return ([coords[0], coords[1] - 1, coords[2] + 1]);
+                    case ('se'): return ([coords[0] + 1, coords[1] - 1, coords[2]]);
+                    case ('ne'): return ([coords[0] + 1, coords[1], coords[2] - 1]);
                 }
             }
 
             var steps = input.split(",");
+            var coords=[0,0,0];
+            var dist = 0;
+            var maxDist = 0;
 
-            var start = {
-                dist=0,
-                dir:-1,
-                n: {
-                    dist:1,
-                    dir: 0,
-                },
-                nw: {
-                    dist:1,
-                    dir: 1,
-                },
-                nw: {
-                    dist:1,
-                    dir: 1,
-                },
-                sw: {
-                    dist:1,
-                    dir: 3,
-                },
-                s: {
-                    dist:1,
-                    dir: 4,
-                },
-                se: {
-                    dist:1,
-                    dir: 5,
-                },
-                ne: {
-                    dist:1,
-                    dir: 7,
-                },
+            for(let step of steps){
+                coords=walk(step,coords);
+                dist = coords.map(a=>Math.abs(a)).reduce((a,b)=>Math.max(a,b));
+                maxDist= (dist>maxDist) ? dist : maxDist;
             }
+            this.output= (version==1) ? dist : maxDist;
         },
     }
 })
