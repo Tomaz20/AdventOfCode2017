@@ -4,7 +4,7 @@ var advent = new Vue({
         output: "",
         test: "",
         input: "",
-        func: 11,
+        func: 12,
         version: 1,
         days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
     },
@@ -30,8 +30,10 @@ var advent = new Vue({
                 case 9: this.day9(this.input, this.version);
                     break;
                 case 10: this.day10(this.input, this.version);
-                    break;;
+                    break;
                 case 11: this.day11(this.input, this.version);
+                    break;
+                case 12: this.day12(this.input, this.version);
                     break;
                 default: this.output = "Ainda não implementado..";
                     break;
@@ -430,8 +432,7 @@ var advent = new Vue({
                     }
                     else {
                         list = list.slice(0, currentPos).concat(
-                            list.slice(currentPos, currentPos + length)
-                                .reverse()
+                            list.slice(currentPos, currentPos + length).reverse()
                         ).concat(
                             list.slice(currentPos + length, N + 1)
                             );
@@ -470,16 +471,52 @@ var advent = new Vue({
             }
 
             var steps = input.split(",");
-            var coords=[0,0,0];
+            var coords = [0, 0, 0];
             var dist = 0;
             var maxDist = 0;
 
-            for(let step of steps){
-                coords=walk(step,coords);
-                dist = coords.map(a=>Math.abs(a)).reduce((a,b)=>Math.max(a,b));
-                maxDist= (dist>maxDist) ? dist : maxDist;
+            for (let step of steps) {
+                coords = walk(step, coords);
+                dist = coords.map(a => Math.abs(a)).reduce((a, b) => Math.max(a, b));
+                maxDist = (dist > maxDist) ? dist : maxDist;
             }
-            this.output= (version==1) ? dist : maxDist;
+            this.output = (version == 1) ? dist : maxDist;
+        },
+        day12: function (input, version) {
+            var visit = function (id, pipe, visited) {
+                visited.push(id);
+
+                for (let exit of pipe[id]) {
+                    if (visited.indexOf(exit) == -1) {
+                        visited = visit(exit, pipe, visited);
+                    }
+                }
+                return visited
+            }
+
+            var lines = input.split("\n").map(a => a.split(' <-> '));
+            var pipe = {};
+
+            for (let line of lines) {
+                pipe[line[0]] = line[1].split(', ');
+            }
+
+            var visited = [];
+
+            if (version == 2) {
+                var groups = 0;
+                for (const program in pipe) {
+                    if (visited.indexOf(program) == -1) {
+                        visited = visit(program, pipe, visited);
+                        groups++;
+                    }
+                }
+                this.output = groups;
+            }
+            else {
+                visited = visit('0', pipe, visited);
+                this.output = visited.length
+            }
         },
     }
 })
