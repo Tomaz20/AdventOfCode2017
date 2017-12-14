@@ -4,36 +4,40 @@ var advent = new Vue({
         output: "",
         test: "",
         input: "",
-        func: 12,
+        func: 14,
         version: 1,
         days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
     },
     methods: {
         runFunction: function (func) {
             switch (func) {
-                case 1: this.day1(this.input, this.version);
+                case 1: this.output = this.day1(this.input, this.version);
                     break;
-                case 2: this.day2(this.input, this.version);
+                case 2: this.output = this.day2(this.input, this.version);
                     break;
-                case 3: this.day3(this.input, this.version);
+                case 3: this.output = this.day3(this.input, this.version);
                     break;
-                case 4: this.day4(this.input, this.version);
+                case 4: this.output = this.day4(this.input, this.version);
                     break;
-                case 5: this.day5(this.input, this.version);
+                case 5: this.output = this.day5(this.input, this.version);
                     break;
-                case 6: this.day6(this.input, this.version);
+                case 6: this.output = this.day6(this.input, this.version);
                     break;
-                case 7: this.day7(this.input, this.version);
+                case 7: this.output = this.day7(this.input, this.version);
                     break;
-                case 8: this.day8(this.input, this.version);
+                case 8: this.output = this.day8(this.input, this.version);
                     break;
-                case 9: this.day9(this.input, this.version);
+                case 9: this.output = this.day9(this.input, this.version);
                     break;
-                case 10: this.day10(this.input, this.version);
+                case 10: this.output = this.day10(this.input, this.version);
                     break;
-                case 11: this.day11(this.input, this.version);
+                case 11: this.output = this.day11(this.input, this.version);
                     break;
-                case 12: this.day12(this.input, this.version);
+                case 12: this.output = this.day12(this.input, this.version);
+                    break;
+                case 13: this.output = this.day13(this.input, this.version);
+                    break;
+                case 14: this.output = this.day14(this.input, this.version);
                     break;
                 default: this.output = "Ainda não implementado..";
                     break;
@@ -53,7 +57,7 @@ var advent = new Vue({
                 b++;
             }
 
-            this.output = res;
+            return res;
         },
         day2: function (input, version) {
             lines = input.split("\n");
@@ -84,7 +88,7 @@ var advent = new Vue({
                 }
             }
 
-            this.output = res;
+            return res;
         },
         day3: function (input, version) {
             day3v2 = function (input) {
@@ -139,7 +143,7 @@ var advent = new Vue({
 
                     matrix[x][y] = sumNeigh(matrix, x, y);
                 }
-                this.output = matrix[x][y];
+                return matrix[x][y];
             }
             if (version == 2) {
                 day3v2(input);
@@ -158,7 +162,7 @@ var advent = new Vue({
                 }
                 var steps = (squareLen - 1) - Math.abs(distToCorner);
 
-                this.output = steps;
+                return steps;
             }
         },
         day4: function (input, version) {
@@ -178,7 +182,7 @@ var advent = new Vue({
                     res++;
                 }
             }
-            this.output = res;
+            return res;
         },
         day5: function (input, version) {
             input = input.split("\n").map(a => parseInt(a));
@@ -194,7 +198,7 @@ var advent = new Vue({
 
                 res++;
             }
-            this.output = res;
+            return res;
         },
         day6: function (input, version) {
             var highest = function (list) {
@@ -220,7 +224,7 @@ var advent = new Vue({
                 }
                 res++;
             }
-            (version == 1) ? this.output = res : this.output = (results.length - results.indexOf(input.slice(0).join()) - 1);
+            return (version == 1) ? res : (results.length - results.indexOf(input.slice(0).join()) - 1);
         },
         day7: function (input, version) {
             lineNumber = function (prog, lines) {
@@ -320,9 +324,7 @@ var advent = new Vue({
 
             var root = buildFromNode(trueBottom, lines);
             weigh(root);
-            this.output = (version == 1) ? trueBottom : checkBalance(root);
-
-            console.log(root);
+            return (version == 1) ? trueBottom : checkBalance(root);
         },
         day8: function (input, version) {
             conditionCheck = function (a, cond, n) {
@@ -374,7 +376,7 @@ var advent = new Vue({
                 }
             }
 
-            this.output = (version == 1) ? highest : trueHighest;
+            return (version == 1) ? highest : trueHighest;
         },
         day9: function (input, version) {
             var stream = input.replace(/!./g, '');
@@ -392,7 +394,7 @@ var advent = new Vue({
             else {
                 ret = stream.length - stream.replace(/<[^>]*>/g, '<>').length;
             }
-            this.output = ret;
+            return ret;
         },
         day10: function (input, version) {
             var lengths = [];
@@ -444,7 +446,7 @@ var advent = new Vue({
             }
 
             if (version == 1) {
-                this.output = list[0] * list[1];
+                return list[0] * list[1];
             }
             else {
                 ret = [];
@@ -455,7 +457,7 @@ var advent = new Vue({
 
                     (hex.length == 1) ? ret.push('0' + hex) : ret.push(hex);
                 }
-                this.output = ret.join('');
+                return ret.join('');
             }
         },
         day11: function (input, version) {
@@ -480,7 +482,7 @@ var advent = new Vue({
                 dist = coords.map(a => Math.abs(a)).reduce((a, b) => Math.max(a, b));
                 maxDist = (dist > maxDist) ? dist : maxDist;
             }
-            this.output = (version == 1) ? dist : maxDist;
+            return (version == 1) ? dist : maxDist;
         },
         day12: function (input, version) {
             var visit = function (id, pipe, visited) {
@@ -511,12 +513,106 @@ var advent = new Vue({
                         groups++;
                     }
                 }
-                this.output = groups;
+                return groups;
             }
             else {
                 visited = visit('0', pipe, visited);
-                this.output = visited.length
+                return visited.length
             }
+        },
+        day13: function (input, version) {
+            input = input.split("\n").map(a => a.split(': '));
+
+            var range = {};
+            var rythm = {};
+            var res = 0;
+            var delay = 0;
+
+            for (let line of input) {
+                range[line[0]] = parseInt(line[1]);
+                rythm[line[0]] = (parseInt(line[1]) - 1) * 2;
+            }
+
+
+            if (version == 1) {
+                for (const depth in range) {
+                    if (depth % rythm[depth] == 0) {
+                        res += (depth * range[depth]);
+                    }
+                }
+
+            }
+            else {
+                var exit = false;
+                do {
+                    delay++;
+                    for (const depth in rythm) {
+                        exit = true;
+                        if ((parseInt(depth) + delay) % rythm[depth] == 0) {
+                            exit = false;
+                            break;
+                        }
+                    }
+                } while (!exit)
+            }
+
+            return (version == 1) ? res : delay;
+        },
+        day14: function (input, version) {
+            var key = input;
+
+            var disk = new Array(128).fill(0);
+
+            disk = disk.map(
+                (a, index) => (this.day10(key + "-" + index, 2)).split('')
+                    .map(function(a){
+                        var bin = parseInt(a, 16).toString(2).split('');
+                        for(var i=0;i<(bin.length%4);i++){
+                            bin.unshift('0');
+                        }
+                        return bin;
+                    })
+                    .reduce((a, b) => a.concat(b)).join('')
+            );
+
+            if(version==1){
+                return disk.map(a => a.split('').map(a => parseInt(a)).reduce((a, b) => a + b)).reduce((a, b) => a + b);
+            }
+            else {
+                function checkNeigh(disk, x, y, group){
+                    disk[x][y]=group+'';
+
+                    
+                    if(x>0 && disk[x-1][y]=='#'){
+                        disk=checkNeigh(disk,x-1,y,group);
+                    }
+                    if(y>0 && disk[x][y-1]=='#'){
+                        disk=checkNeigh(disk,x,y-1,group);
+                    }
+                    if(x<127 && disk[x+1][y]=='#'){
+                        disk=checkNeigh(disk,x+1,y,group);
+                    }
+                    if(y<127 && disk[x][y+1]=='#'){
+                        disk=checkNeigh(disk,x,y+1,group);
+                    }
+                    return disk;
+                }
+
+                disk = disk.map(a=>a.replace(/1/g,'#').split(''));
+                var group = 0;
+                for(let [i,line] of disk.entries()){
+                    for(let [j,chr] of line.entries()){
+                        if(chr=='#'){
+                            group++;
+                            disk = checkNeigh(disk,i,j,group);
+                        }
+                    }
+                }
+                return group;
+            }
+
+            // parte 1 numa só linha
+            //return new Array(128).fill(0).map((a, index) => (this.day10(input + "-" + index, 2)).split('').map(a => parseInt(a, 16).toString(2).split('')).reduce((a, b) => a.concat(b)).map(a => parseInt(a))).map(a => a.reduce((a, b) => a + b)).reduce((a, b) => a + b);
         },
     }
 })
