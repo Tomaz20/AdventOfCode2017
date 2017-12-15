@@ -4,7 +4,7 @@ var advent = new Vue({
         output: "",
         test: "",
         input: "",
-        func: 14,
+        func: 15,
         version: 1,
         days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
     },
@@ -38,6 +38,8 @@ var advent = new Vue({
                 case 13: this.output = this.day13(this.input, this.version);
                     break;
                 case 14: this.output = this.day14(this.input, this.version);
+                    break;
+                case 15: this.output = this.day15(this.input, this.version);
                     break;
                 default: this.output = "Ainda não implementado..";
                     break;
@@ -565,9 +567,9 @@ var advent = new Vue({
 
             disk = disk.map(
                 (a, index) => (this.day10(key + "-" + index, 2)).split('')
-                    .map(function(a){
+                    .map(function (a) {
                         var bin = parseInt(a, 16).toString(2).split('');
-                        for(var i=0;i<(bin.length%4);i++){
+                        for (var i = 0; i < (bin.length % 4); i++) {
                             bin.unshift('0');
                         }
                         return bin;
@@ -575,36 +577,37 @@ var advent = new Vue({
                     .reduce((a, b) => a.concat(b)).join('')
             );
 
-            if(version==1){
+            if (version == 1) {
                 return disk.map(a => a.split('').map(a => parseInt(a)).reduce((a, b) => a + b)).reduce((a, b) => a + b);
             }
             else {
-                function checkNeigh(disk, x, y, group){
-                    disk[x][y]=group+'';
+                disk = disk.map(a => a.replace(/1/g, '#').split(''));
+                
+                function checkNeigh(disk, x, y, group) {
+                    disk[x][y] = group + '';
 
-                    
-                    if(x>0 && disk[x-1][y]=='#'){
-                        disk=checkNeigh(disk,x-1,y,group);
+
+                    if (x > 0 && disk[x - 1][y] == '#') {
+                        disk = checkNeigh(disk, x - 1, y, group);
                     }
-                    if(y>0 && disk[x][y-1]=='#'){
-                        disk=checkNeigh(disk,x,y-1,group);
+                    if (y > 0 && disk[x][y - 1] == '#') {
+                        disk = checkNeigh(disk, x, y - 1, group);
                     }
-                    if(x<127 && disk[x+1][y]=='#'){
-                        disk=checkNeigh(disk,x+1,y,group);
+                    if (x < 127 && disk[x + 1][y] == '#') {
+                        disk = checkNeigh(disk, x + 1, y, group);
                     }
-                    if(y<127 && disk[x][y+1]=='#'){
-                        disk=checkNeigh(disk,x,y+1,group);
+                    if (y < 127 && disk[x][y + 1] == '#') {
+                        disk = checkNeigh(disk, x, y + 1, group);
                     }
                     return disk;
                 }
 
-                disk = disk.map(a=>a.replace(/1/g,'#').split(''));
                 var group = 0;
-                for(let [i,line] of disk.entries()){
-                    for(let [j,chr] of line.entries()){
-                        if(chr=='#'){
+                for (let [i, line] of disk.entries()) {
+                    for (let [j, chr] of line.entries()) {
+                        if (chr == '#') {
                             group++;
-                            disk = checkNeigh(disk,i,j,group);
+                            disk = checkNeigh(disk, i, j, group);
                         }
                     }
                 }
@@ -613,6 +616,44 @@ var advent = new Vue({
 
             // parte 1 numa só linha
             //return new Array(128).fill(0).map((a, index) => (this.day10(input + "-" + index, 2)).split('').map(a => parseInt(a, 16).toString(2).split('')).reduce((a, b) => a.concat(b)).map(a => parseInt(a))).map(a => a.reduce((a, b) => a + b)).reduce((a, b) => a + b);
+        },
+        day15: function (input, version) {
+            input = input.split("\n").map(a => parseInt(a));
+
+            var seqA = input[0];
+            var factorA = 16807;
+            var seqB = input[1];
+            var factorB = 48271;
+
+            var iters = (version==1) ? 40000000 : 5000000;
+            var res = 0;
+
+            for (var i = 0; i < iters; i++) {
+                
+                if((i%1000000)==0){
+                    console.log(i);
+                }
+
+                seqA = (seqA * factorA) % 2147483647;
+                seqB = (seqB * factorB) % 2147483647;
+                
+                if(version==2) {
+                    while((seqA%4)!=0){
+                        seqA = (seqA * factorA) % 2147483647;
+                    }
+                    while((seqB%8)!=0){
+                        seqB = (seqB * factorB) % 2147483647;
+                    }
+                    if(seqA%8!=0){
+                        continue;
+                    }
+                }
+                if (seqA.toString(2).slice(-16) == seqB.toString(2).slice(-16)) {
+                    res++;
+                }
+            }
+
+            return res;
         },
     }
 })
