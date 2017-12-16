@@ -4,7 +4,7 @@ var advent = new Vue({
         output: "",
         test: "",
         input: "",
-        func: 15,
+        func: 16,
         version: 1,
         days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
     },
@@ -40,6 +40,8 @@ var advent = new Vue({
                 case 14: this.output = this.day14(this.input, this.version);
                     break;
                 case 15: this.output = this.day15(this.input, this.version);
+                    break;
+                case 16: this.output = this.day16(this.input, this.version);
                     break;
                 default: this.output = "Ainda não implementado..";
                     break;
@@ -582,7 +584,7 @@ var advent = new Vue({
             }
             else {
                 disk = disk.map(a => a.replace(/1/g, '#').split(''));
-                
+
                 function checkNeigh(disk, x, y, group) {
                     disk[x][y] = group + '';
 
@@ -625,26 +627,26 @@ var advent = new Vue({
             var seqB = input[1];
             var factorB = 48271;
 
-            var iters = (version==1) ? 40000000 : 5000000;
+            var iters = (version == 1) ? 40000000 : 5000000;
             var res = 0;
 
             for (var i = 0; i < iters; i++) {
-                
-                if((i%1000000)==0){
+
+                if ((i % 1000000) == 0) {
                     console.log(i);
                 }
 
                 seqA = (seqA * factorA) % 2147483647;
                 seqB = (seqB * factorB) % 2147483647;
-                
-                if(version==2) {
-                    while((seqA%4)!=0){
+
+                if (version == 2) {
+                    while ((seqA % 4) != 0) {
                         seqA = (seqA * factorA) % 2147483647;
                     }
-                    while((seqB%8)!=0){
+                    while ((seqB % 8) != 0) {
                         seqB = (seqB * factorB) % 2147483647;
                     }
-                    if(seqA%8!=0){
+                    if (seqA % 8 != 0) {
                         continue;
                     }
                 }
@@ -654,6 +656,51 @@ var advent = new Vue({
             }
 
             return res;
+        },
+        day16: function (input, version) {
+            function swap(seq, a, b) {
+                var c = seq[a];
+                seq[a] = seq[b];
+                seq[b] = c;
+
+                return seq;
+            }
+
+            input = input.split(",");
+
+            var seq = new Array(16).fill(0).map((a, i) => String.fromCharCode(97 + i));
+
+            console.log(seq);
+            var i = 0;
+            var seqInicial=seq;
+            do {
+                for (let move of input) {
+                    if (move[0] == 's') {
+                        var x = parseInt(move.slice(1));
+                        seq = seq.slice(16 - x).concat(seq.slice(0, 16 - x));
+                    }
+                    else if (move[0] == 'p') {
+                        var a = seq.indexOf(move[1]);
+                        var b = seq.indexOf(move[3]);
+                        seq = swap(seq, a, b);
+                    }
+                    else {
+                        var pos = move.slice(1).split('/');
+                        seq = swap(seq, pos[0], pos[1]);
+                    }
+                }
+                if(seq.join('')==seqInicial.join('')){
+                    i++;
+                    i=Math.floor(1000000000/i);
+                    i=i*60-1;
+                }
+
+                if ((i % 100) == 0) {
+                    console.log(i);
+                }
+
+            } while (version == 2 && ++i < 1000000000)
+            return seq.join('');
         },
     }
 })
