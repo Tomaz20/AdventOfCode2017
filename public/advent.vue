@@ -4,7 +4,7 @@ var advent = new Vue({
         output: "",
         test: "",
         input: "",
-        func: 17,
+        func: 19,
         version: 1,
         days: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25],
     },
@@ -44,6 +44,10 @@ var advent = new Vue({
                 case 16: this.output = this.day16(this.input, this.version);
                     break;
                 case 17: this.output = this.day17(this.input, this.version);
+                    break;
+                case 18: this.output = this.day18(this.input, this.version);
+                    break;
+                case 19: this.output = this.day19(this.input, this.version);
                     break;
                 default: this.output = "Ainda não implementado..";
                     break;
@@ -701,7 +705,7 @@ var advent = new Vue({
             var currPos = 0;
             var res = 0;
 
-            if(version==1){
+            if (version == 1) {
                 for (var i = 1; i < 2018; i++) {
                     currPos = (currPos + steps) % (seq.length) + 1;
                     seq.splice(currPos, 0, i);
@@ -709,12 +713,175 @@ var advent = new Vue({
             } else {
                 for (var i = 1; i < 5000000; i++) {
                     currPos = (currPos + steps) % (i) + 1;
-                    if(currPos==1){
-                        res=i;
+                    if (currPos == 1) {
+                        res = i;
                     }
                 }
             }
             return (version == 1) ? seq[(currPos + 1) % seq.length] : res;
+        },
+        day18: function (input, version) {
+            var lines = input.split("\n").map(a => a.split(' '));
+
+            var lastSound;
+            var ret;
+
+            var vars0 = { p: 0 };
+            var vars1 = { p: 1 };
+
+            var mail0to1 = [];
+            var mail1to0 = [];
+
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                var op = line[0];
+                var a = line[1];
+                var b = line[2];
+
+                if (version == 1) {
+                    if (b) {
+                        b = (isNaN(b)) ? vars0[b] : parseInt(b);
+                    }
+                    if (!vars0[a]) {
+                        vars0[a] = 0;
+                    }
+
+                    switch (op) {
+                        case 'snd': lastSound = vars0[a];
+                            break;
+                        case 'set': vars0[a] = b;
+                            break;
+                        case 'add': vars0[a] += b;
+                            break;
+                        case 'mul': vars0[a] *= b;
+                            break;
+                        case 'mod': vars0[a] = vars0[a] % b;
+                            break;
+                        case 'rcv': if (vars0[a] != 0) { return lastSound; }
+                            break;
+                        case 'jgz': if (vars0[a] != 0) {
+                            i = i + b - 1;
+                        }
+                            break;
+                        default: console.log(op + " : erro?");
+                            break;
+                    }
+                }
+                else {
+                    var b0, b1;
+                    if (b) {
+                        if (isNaN(b)) {
+                            b0 = vars0[b];
+                            b1 = vars1[b];
+                        }
+                        else {
+                            b0 = parseInt(b);
+                            b1 = parseInt(b);
+                        }
+                    }
+                    if (!vars0[a]) {
+                        vars0[a] = 0;
+                        vars1[a] = 0;
+                    }
+
+                    switch (op) {
+                        case 'snd':
+                            mail0to1.unshift(vars0[a]);
+                            mail1to0.unshift(vars1[a]);
+                            break;
+                        case 'set':
+                            vars0[a] = b0;
+                            vars1[a] = b1;
+                            break;
+                        case 'add':
+                            vars0[a] += b0;
+                            vars1[a] += b1;
+                            break;
+                        case 'mul':
+                            vars0[a] *= b0;
+                            vars1[a] *= b1;
+                            break;
+                        case 'mod':
+                            vars0[a] %= b0;
+                            vars1[a] %= b1;
+                            break;
+                        case 'rcv': if (vars0[a] != 0) { return lastSound; }
+                            break;
+                        case 'jgz': if (vars0[a] > 0) {
+                            i = i + b - 1;
+                        }
+                            break;
+                        default: console.log(op + " : erro?");
+                            break;
+                    }
+                }
+            }
+            return lastSound;
+        },
+        day19: function (input, version) {
+            function turn(pattern, coords, dir) {
+                var u = pattern[coords.y - 1][coords.x];
+                var d = pattern[coords.y + 1][coords.x];
+                var l = pattern[coords.y][coords.x - 1];
+                var r = pattern[coords.y][coords.x + 1];
+
+                var lastDir = (dir.x == 0) ? 'v' : 'h';
+
+                switch (lastDir) {
+                    case 'h':
+                        if (u && u != ' ') {
+                            return { x: 0, y: -1 };
+                        }
+                        else if (d && d != ' ') {
+                            return { x: 0, y: 1 };
+                        }
+                        else { console.log(coords) }
+                        break;
+                    case 'v':
+                        if (r && r != ' ') {
+                            return { x: 1, y: 0 };
+                        }
+                        else if (l && l != ' ') {
+                            return { x: -1, y: 0 };
+                        }
+                        else { console.log(coords) }
+                        break;
+                }
+                return null;
+            }
+
+            const pattern = input.split("\n").map(a => a.split(''));
+            const maxX = pattern[0].length;
+            const maxY = pattern.length;
+
+            var pos = {
+                x: pattern[0].indexOf('|'),
+                y: 0
+            };
+            var dir = {
+                x: 0,
+                y: 1,
+            };
+            var ret = "";
+            var step;
+            var i=0;
+            do {
+                step = pattern[pos.y][pos.x];
+
+                ret += (step.match(/[A-Z]/) || '');
+
+                if (step == '+') {
+                    dir = turn(pattern, pos, dir);
+                }
+                if(!dir || step==' '){break}
+
+                i++;
+
+                pos.x += dir.x;
+                pos.y += dir.y;
+            } while (pos.x >= 0 && pos.x < maxX && pos.y >= 0 && pos.y < maxY)
+    
+            return (version==1)? ret : i;
         },
     }
 })
